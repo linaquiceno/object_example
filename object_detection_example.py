@@ -8,16 +8,16 @@ from label_studio_sdk import Client
 from PIL import Image
 
 # Definimos un dataset personalizado para cargar las imágenes y anotaciones
-class CustomDataset(Dataset):
-    def __init__(self, annotations, img_dir, transform=None):
+class CustomDataset(Dataset): #Dataset es una clase base de PyTorch para crear datasets personalizados, aqui estamos heradando de ella y personalizando su comportamiento
+    def __init__(self, annotations, img_dir, transform=None): #init hace que esta funcion sea privada para esta clase
         """
         annotations: lista de anotaciones (provenientes de Label Studio)
         img_dir: directorio donde se encuentran las imágenes
         transform: transformaciones a aplicar a las imágenes
         """
         self.annotations = annotations
-        self.img_dir = img_dir
-        self.transform = transform
+        self.img_dir = img_dir #si hago j.image_dir obtengo este directorio
+        self.transform = transform #transform is an optional parameter
         self.label_mapping = self.create_label_mapping()
 
     def create_label_mapping(self):
@@ -34,11 +34,11 @@ class CustomDataset(Dataset):
         return self.label_mapping[label]
 
     def __len__(self):
-        return len(self.annotations)
+        return len(self.annotations) #annotations es una lista de diccionarios, por lo que len devuelve el número de elementos en la lista
 
     def __getitem__(self, idx):
         # Load the image and annotations
-        annotation = self.annotations[idx]
+        annotation = self.annotations[idx] #I want the annotiation of this image
         # Extract the image path
         image_name = os.path.basename(annotation['image'].split("-")[-1])
         img_path = os.path.join(self.img_dir, image_name)
@@ -61,11 +61,11 @@ class CustomDataset(Dataset):
         return image, targets
 
 # Definimos el modelo Lightning
-class ObjectDetectionModel(pl.LightningModule):
-    def __init__(self, num_classes):
+class ObjectDetectionModel(pl.LightningModule): #este es el contenedor
+    def __init__(self, num_classes): # este es el modelo
         super().__init__()
         # Cargamos un modelo preentrenado de torchvision (Faster R-CNN)
-        self.model = models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
+        self.model = models.detection.fasterrcnn_resnet50_fpn(pretrained=True) #fasterrcnn_resnet50_fpn es un modelo de detección de objetos preentrenado en COCO, jutno con yolo son los mejores modelos para detección de objetos
         # Ajustamos el número de clases
         in_features = self.model.roi_heads.box_predictor.cls_score.in_features
         self.model.roi_heads.box_predictor = models.detection.faster_rcnn.FastRCNNPredictor(in_features, num_classes)
@@ -78,7 +78,7 @@ class ObjectDetectionModel(pl.LightningModule):
         images, targets = batch
         loss_dict = self.model(images, targets)
         loss = sum(loss for loss in loss_dict.values())
-        self.log("train_loss", loss)
+        self.log("train_loss", loss) #sum of regression and classification losses
         for key, value in loss_dict.items():
             self.log(f"train_{key}", value)
         return loss
