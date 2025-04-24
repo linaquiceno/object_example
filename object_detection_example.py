@@ -125,10 +125,10 @@ if __name__ == "__main__":
     with open(os.path.join(os.path.dirname(__file__), "label_studio_key.txt"), "r") as key_file:
         api_key = key_file.read().strip()
 
-    project_id = 10  # ID del proyecto en Label Studio, cambia esto según tu configuración
+    project_id = 2  # ID del proyecto en Label Studio, cambia esto según tu configuración
 
     ## Cambia esto a tu directorio de imágenes
-    img_dir = "/Users/benweinstein/Downloads/example_airborne_birds"  # Directorio de imágenes
+    img_dir = "/Users/lina/Library/CloudStorage/OneDrive-Personal/Lina2019/Ecologia/AIWorkshop/DeepForest/example_airborne_birds"  # Directorio de imágenes
     num_classes = 2  # Número de clases (incluyendo fondo)
 
     # Cargamos las anotaciones
